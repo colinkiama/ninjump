@@ -1,24 +1,24 @@
-import Phaser from 'phaser';
+import Phaser from "phaser";
 
+const PLAYER_SIZE = 32;
 export default class Demo extends Phaser.Scene {
+  private _player!: Phaser.Types.Physics.Arcade.GameObjectWithDynamicBody;
   constructor() {
-    super('GameScene');
+    super("GameScene");
   }
 
   preload() {
-    this.load.image('logo', 'assets/phaser3-logo.png');
+    this.load.image("player", "assets/player.png");
+    this.load.image("enemy", "assets/enemy.png");
   }
 
   create() {
-    const logo = this.add.image(400, 70, 'logo');
+    this._player = this.physics.add.image(
+      PLAYER_SIZE / 2,
+      this.renderer.height / 2 - PLAYER_SIZE / 2 - 50,
+      "player"
+    );
 
-    this.tweens.add({
-      targets: logo,
-      y: 350,
-      duration: 1500,
-      ease: 'Sine.inOut',
-      yoyo: true,
-      repeat: -1
-    });
+    this._player.body.setGravityY(300);
   }
 }
