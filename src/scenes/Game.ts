@@ -3,9 +3,14 @@ import SlipTimer from "../objects/SlipTimer";
 
 const PLAYER_SIZE = 32;
 const PLAYER_GRAVITY = 500;
+
 const WALL_WIDTH = 20;
+
 const JUMP_X_VELOCITY = 350;
 const JUMP_Y_VELOCITY = 300;
+
+const BRICK_WIDTH = 40;
+const BRICK_HEIGHT = 20;
 
 enum PlayerCollisionState {
   OnLeftWall,
@@ -31,6 +36,7 @@ export default class Demo extends Phaser.Scene {
     this.load.image("player", "assets/player.png");
     this.load.image("enemy", "assets/enemy.png");
     this.load.image("wall", "assets/wall.png");
+    this.load.image("brick", "assets/brick.png");
   }
 
   create() {
@@ -38,6 +44,12 @@ export default class Demo extends Phaser.Scene {
       PLAYER_SIZE / 2 + WALL_WIDTH - 1,
       this.renderer.height / 2 - PLAYER_SIZE / 2 - 50,
       "player"
+    );
+
+    let brick = this.physics.add.image(
+      this.renderer.width / 2 - BRICK_WIDTH / 2,
+      BRICK_HEIGHT / 2,
+      "brick"
     );
 
     this._leftWall = this.physics.add.staticImage(
