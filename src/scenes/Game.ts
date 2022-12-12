@@ -1,7 +1,10 @@
 import Phaser from "phaser";
 
 const PLAYER_SIZE = 32;
+const PLAYER_GRAVITY = 500;
 const WALL_WIDTH = 20;
+const JUMP_X_VELOCITY = 250;
+const JUMP_Y_VELOCITY = 300;
 
 enum PlayerCollisionState {
   OnLeftWall,
@@ -53,7 +56,7 @@ export default class Demo extends Phaser.Scene {
       this.handleWallCollision(player, wall)
     );
 
-    this._player.body.setGravityY(300);
+    this._player.body.setGravityY(PLAYER_GRAVITY);
     this._keySpace = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE
     );
@@ -76,12 +79,12 @@ export default class Demo extends Phaser.Scene {
     if (this._keySpace.isDown) {
       switch (this._currentPlayerCollisionState) {
         case PlayerCollisionState.OnLeftWall:
-          this._player.body.setVelocity(300, -200);
+          this._player.body.setVelocity(JUMP_X_VELOCITY, -JUMP_Y_VELOCITY);
           this._currentPlayerCollisionState =
             PlayerCollisionState.JumpingToWall;
           break;
         case PlayerCollisionState.OnRightWall:
-          this._player.body.setVelocity(-300, -200);
+          this._player.body.setVelocity(-JUMP_X_VELOCITY, -JUMP_Y_VELOCITY);
           this._currentPlayerCollisionState =
             PlayerCollisionState.JumpingToWall;
           break;
