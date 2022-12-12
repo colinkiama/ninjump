@@ -11,6 +11,7 @@ const JUMP_Y_VELOCITY = 300;
 
 const BRICK_WIDTH = 40;
 const BRICK_HEIGHT = 20;
+const BRICK_GRAVITY = 200;
 
 enum PlayerCollisionState {
   OnLeftWall,
@@ -75,6 +76,8 @@ export default class Demo extends Phaser.Scene {
     );
 
     this._player.body.setGravityY(PLAYER_GRAVITY);
+    brick.body.setGravityY(BRICK_GRAVITY);
+
     this._keySpace = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE
     );
