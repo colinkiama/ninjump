@@ -191,10 +191,15 @@ export default class Demo extends Phaser.Scene {
   }
 
   gameOver() {
+    if (this.scene.isActive("GameOver")) {
+      return;
+    }
+
     this.scene.pause();
     // console.log("It's game over huh");
-    this.scene.setActive(true, "GameOver");
+    // this.scene.setActive(true, "GameOver");
     let gameOverScene = this.scene.add("GameOver", GameOver, true);
-    this.scene.bringToTop(gameOverScene);
+    // this.scene.bringToTop("GameOver");
+    // this.scene.launch(new GameOver());
   }
 }
