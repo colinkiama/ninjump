@@ -63,7 +63,7 @@ export default class Demo extends Phaser.Scene {
         1 / 2,
         this.renderer.width,
         1,
-        0xff000
+        undefined
       )
     );
 
