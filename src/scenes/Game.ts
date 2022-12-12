@@ -57,6 +57,19 @@ export default class Demo extends Phaser.Scene {
       "wall"
     );
 
+    let ceiling = <Phaser.Types.Physics.Arcade.GameObjectWithStaticBody>(
+      this.add.rectangle(
+        this.renderer.width / 2,
+        1 / 2,
+        this.renderer.width,
+        1,
+        0xff000
+      )
+    );
+
+    this.physics.add.existing(ceiling);
+    ceiling.body.immovable = true;
+
     this._slipTimer = new SlipTimer();
 
     this.physics.add.collider(this._player, this._leftWall, (player, wall) =>
@@ -66,6 +79,8 @@ export default class Demo extends Phaser.Scene {
     this.physics.add.collider(this._player, this._rightWall, (player, wall) =>
       this.handleWallCollision(player, wall)
     );
+
+    this.physics.add.collider(this._player, ceiling);
 
     this._player.body.setGravityY(PLAYER_GRAVITY);
 
