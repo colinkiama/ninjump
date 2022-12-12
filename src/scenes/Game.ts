@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import BrickPool from "../objects/BrickPool";
 import SlipTimer from "../objects/SlipTimer";
+import GameOver from "./GameOver";
 
 const PLAYER_SIZE = 32;
 const PLAYER_GRAVITY = 200;
@@ -33,7 +34,6 @@ export default class Demo extends Phaser.Scene {
 
   preload() {
     this.load.image("player", "assets/player.png");
-    this.load.image("enemy", "assets/enemy.png");
     this.load.image("wall", "assets/wall.png");
     this.load.image("brick", "assets/brick.png");
   }
@@ -96,8 +96,7 @@ export default class Demo extends Phaser.Scene {
     this.physics.add.collider(this._player, ceiling);
 
     this.physics.add.collider(this._player, pit, (player, pit) => {
-      console.log("Game over!");
-      this.scene.pause();
+      this.gameOver();
     });
 
     this._player.body.setGravityY(PLAYER_GRAVITY);
@@ -121,9 +120,7 @@ export default class Demo extends Phaser.Scene {
   }
 
   brickHitPlayer(): void {
-    this.scene.pause();
-    console.log("Game over");
-    // TODO render a "GAME OVER" scene over this one
+    this.gameOver();
   }
 
   slip(): void {
@@ -198,5 +195,13 @@ export default class Demo extends Phaser.Scene {
 
   setCanSlip(value: boolean) {
     this._canSlip = value;
+  }
+
+  gameOver() {
+    this.scene.pause();
+    // console.log("It's game over huh");
+    this.scene.setActive(true, "GameOver");
+    let gameOverScene = this.scene.add("GameOver", GameOver, true);
+    this.scene.bringToTop(gameOverScene);
   }
 }
