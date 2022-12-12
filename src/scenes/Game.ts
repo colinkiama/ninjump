@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import BrickPool from "../objects/BrickPool";
 import SlipTimer from "../objects/SlipTimer";
 
 const PLAYER_SIZE = 32;
@@ -8,10 +9,6 @@ const WALL_WIDTH = 20;
 
 const JUMP_X_VELOCITY = 350;
 const JUMP_Y_VELOCITY = 300;
-
-const BRICK_WIDTH = 40;
-const BRICK_HEIGHT = 20;
-const BRICK_GRAVITY = 200;
 
 enum PlayerCollisionState {
   OnLeftWall,
@@ -28,6 +25,7 @@ export default class Demo extends Phaser.Scene {
   private _currentPlayerCollisionState!: PlayerCollisionState;
   private _slipTimer!: SlipTimer;
   private _canSlip!: boolean;
+  private _brickPool!: BrickPool;
 
   constructor() {
     super("GameScene");
@@ -45,12 +43,6 @@ export default class Demo extends Phaser.Scene {
       PLAYER_SIZE / 2 + WALL_WIDTH - 1,
       this.renderer.height / 2 - PLAYER_SIZE / 2 - 50,
       "player"
-    );
-
-    let brick = this.physics.add.image(
-      this.renderer.width / 2 - BRICK_WIDTH / 2,
-      BRICK_HEIGHT / 2,
-      "brick"
     );
 
     this._leftWall = this.physics.add.staticImage(
@@ -76,13 +68,24 @@ export default class Demo extends Phaser.Scene {
     );
 
     this._player.body.setGravityY(PLAYER_GRAVITY);
-    brick.body.setGravityY(BRICK_GRAVITY);
 
     this._keySpace = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE
     );
 
     this._currentPlayerCollisionState = PlayerCollisionState.OnLeftWall;
+
+    this._brickPool = new BrickPool(this, this._player, () =>
+      this.brickHitPlayer()
+    );
+
+    this._brickPool.start();
+  }
+
+  brickHitPlayer(): void {
+    this.scene.pause();
+    console.log("Game over");
+    // TODO render a "GAME OVER" scene over this one
   }
 
   slip(): void {
