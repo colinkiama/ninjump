@@ -58,25 +58,18 @@ export default class Demo extends Phaser.Scene {
     );
 
     let ceiling = <Phaser.Types.Physics.Arcade.GameObjectWithStaticBody>(
-      this.add.rectangle(
-        this.renderer.width / 2,
-        1 / 2,
-        this.renderer.width,
-        1,
-        undefined
-      )
+      this.add.zone(this.renderer.width / 2, 1 / 2, this.renderer.width, 1)
     );
 
     this.physics.add.existing(ceiling);
     ceiling.body.immovable = true;
 
     let pit = <Phaser.Types.Physics.Arcade.GameObjectWithStaticBody>(
-      this.add.rectangle(
+      this.add.zone(
         this.renderer.width / 2,
         this.renderer.height + 100,
         this.renderer.width,
-        1,
-        0xff00ff
+        1
       )
     );
 
