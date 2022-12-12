@@ -3,11 +3,11 @@ import BrickPool from "../objects/BrickPool";
 import SlipTimer from "../objects/SlipTimer";
 
 const PLAYER_SIZE = 32;
-const PLAYER_GRAVITY = 500;
+const PLAYER_GRAVITY = 200;
 
 const WALL_WIDTH = 20;
 
-const JUMP_X_VELOCITY = 350;
+const JUMP_X_VELOCITY = 700;
 const JUMP_Y_VELOCITY = 300;
 
 enum PlayerCollisionState {
@@ -75,7 +75,12 @@ export default class Demo extends Phaser.Scene {
 
     this._currentPlayerCollisionState = PlayerCollisionState.OnLeftWall;
 
-    this._brickPool = new BrickPool(this, this._player, () =>
+    let dropAreaRange = {
+      min: WALL_WIDTH,
+      max: this.renderer.width - WALL_WIDTH,
+    };
+    console.log("Drop area range:", dropAreaRange);
+    this._brickPool = new BrickPool(this, this._player, dropAreaRange, () =>
       this.brickHitPlayer()
     );
 
@@ -113,6 +118,7 @@ export default class Demo extends Phaser.Scene {
     ) {
       this._slipTimer.start(() => this.setCanSlip(false));
       this.setCanSlip(true);
+      player.body.velocity.y = 0;
     }
 
     if (wall === this._leftWall) {

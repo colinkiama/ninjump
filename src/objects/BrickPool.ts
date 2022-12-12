@@ -1,10 +1,10 @@
-import { Scene } from "phaser";
+import { WallJump } from "./Range";
 
-const BRICK_WIDTH = 40;
-const BRICK_HEIGHT = 20;
+const BRICK_WIDTH = 16;
+const BRICK_HEIGHT = 8;
 
-const MIN_BRICK_GRAVITY = 100;
-const MAX_BRICK_GRAVITY = 300;
+const MIN_BRICK_GRAVITY = 200;
+const MAX_BRICK_GRAVITY = 201;
 
 enum DropArea {
   Left,
@@ -12,13 +12,13 @@ enum DropArea {
   Right,
 }
 
-const MIN_SPAWN_INTERVAL = 500; // Milliseconds
-const MAX_SPAWN_INTERVAL = 1000; // Milliseconds
+const MIN_SPAWN_INTERVAL = 2000; // Milliseconds
+const MAX_SPAWN_INTERVAL = 3000; // Milliseconds
 
 export default class BrickPool {
-  private _bricks: Phaser.Types.Physics.Arcade.GameObjectWithDynamicBody[];
   private _player: Phaser.Types.Physics.Arcade.GameObjectWithDynamicBody;
   private _scene: Phaser.Scene;
+  private _walledDropAreaRange: WallJump.Range;
   private _brickCollisionCallback: () => void;
   private _timerId!: number;
 
@@ -32,11 +32,12 @@ export default class BrickPool {
   constructor(
     scene: Phaser.Scene,
     player: Phaser.Types.Physics.Arcade.GameObjectWithDynamicBody,
+    walledDropAreaRange: WallJump.Range,
     brickCollisionCallback: () => void
   ) {
-    this._bricks = [];
     this._player = player;
     this._scene = scene;
+    this._walledDropAreaRange = walledDropAreaRange;
     this._brickCollisionCallback = brickCollisionCallback;
   }
 
@@ -51,7 +52,7 @@ export default class BrickPool {
     let dropArea = BrickPool.decideDropArea();
     let startingPosition = BrickPool.decideStartingPosition(
       dropArea,
-      this._scene
+      this._walledDropAreaRange
     );
 
     let addedBrick = this._scene.physics.add.image(
@@ -76,39 +77,56 @@ export default class BrickPool {
       MIN_BRICK_GRAVITY
     );
   }
-  static decideStartingPosition(dropArea: DropArea, scene: Scene) {
+  static decideStartingPosition(
+    dropArea: DropArea,
+    walledDropAreaRange: WallJump.Range
+  ) {
     // Left area  = Possible 20% left of screen area
     // Middle area = Possible 60% of screen area
     // Right area = Possible 20% of right area
-    const possibleXRange = scene.renderer.width - BRICK_WIDTH;
 
     switch (dropArea) {
       case DropArea.Left:
         return new Phaser.Math.Vector2(
-          BrickPool.generateStartingXPosition(0, possibleXRange * 0.2),
-          -BRICK_WIDTH / 2
+          BrickPool.generateStartingXPosition(walledDropAreaRange, {
+            min: 0,
+            max: 0.2,
+          }),
+          -BRICK_HEIGHT / 2
         );
       case DropArea.Middle:
         return new Phaser.Math.Vector2(
-          BrickPool.generateStartingXPosition(
-            possibleXRange * 0.2,
-            possibleXRange * 0.8
-          ),
-          -BRICK_WIDTH / 2
+          BrickPool.generateStartingXPosition(walledDropAreaRange, {
+            min: 0.2,
+            max: 0.8,
+          }),
+          -BRICK_HEIGHT / 2
         );
       case DropArea.Right:
         return new Phaser.Math.Vector2(
-          BrickPool.generateStartingXPosition(
-            possibleXRange * 0.8,
-            possibleXRange * 1.0
-          ),
-          -BRICK_WIDTH / 2
+          BrickPool.generateStartingXPosition(walledDropAreaRange, {
+            min: 0.8,
+            max: 1.0,
+          }),
+          -BRICK_HEIGHT / 2
         );
     }
   }
 
-  static generateStartingXPosition(minValue: number, maxValue: number) {
-    return Math.random() * (maxValue - minValue) + minValue + BRICK_WIDTH / 2;
+  //   static generateStartingXPosition(minValue: number, maxValue: number) {
+  //     return Math.random() * (maxValue - minValue) + minValue + BRICK_WIDTH / 2;
+  //   }
+  static generateStartingXPosition(
+    dropAreaRange: WallJump.Range,
+    areaPortionRange: WallJump.Range
+  ) {
+    let randomPortion =
+      Math.random() * (areaPortionRange.max - areaPortionRange.min) +
+      areaPortionRange.min;
+    return (
+      randomPortion * (dropAreaRange.max - dropAreaRange.min) +
+      dropAreaRange.min
+    );
   }
 
   static decideDropArea() {
