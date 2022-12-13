@@ -22,6 +22,7 @@ export default class BrickPool {
   private _walledDropAreaRange: WallJump.Range;
   private _brickCollisionCallback: () => void;
   private _timerId!: number;
+  private _bricks: Brick[];
 
   static generateSpawnTimeout(): number | undefined {
     return (
@@ -39,6 +40,7 @@ export default class BrickPool {
     this._player = player;
     this._scene = scene;
     this._walledDropAreaRange = walledDropAreaRange;
+    this._bricks = [];
     this._brickCollisionCallback = brickCollisionCallback;
   }
 
@@ -62,6 +64,8 @@ export default class BrickPool {
       startingPosition.y,
       "brick"
     );
+
+    this._bricks.push(addedBrick);
 
     addedBrick.setImmovable(true);
 
