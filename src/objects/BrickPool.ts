@@ -16,11 +16,12 @@ enum DropArea {
 const MIN_SPAWN_INTERVAL = 2000; // Milliseconds
 const MAX_SPAWN_INTERVAL = 3000; // Milliseconds
 
-export default class BrickPool {
+export default class BrickPool extends Phaser.Physics.Arcade.Group {
   private _player: Phaser.Physics.Arcade.Image;
   private _scene: Phaser.Scene;
   private _walledDropAreaRange: WallJump.Range;
-  private _brickCollisionCallback: () => void;
+  private _cleanUpCallback: (brick: Brick) => boolean;
+  private _stateCallbacks: ((brick: Brick) => void)[];
   private _timerId!: number;
   private _bricks: Brick[];
 
@@ -35,70 +36,66 @@ export default class BrickPool {
     scene: Phaser.Scene,
     player: Phaser.Physics.Arcade.Image,
     walledDropAreaRange: WallJump.Range,
-    brickCollisionCallback: () => void
+    cleanUpCallback: (brick: Brick) => boolean,
+    stateCallbacks: ((brick: Brick) => void)[]
   ) {
+    super(scene.physics.world, scene);
+
     this._player = player;
     this._scene = scene;
     this._walledDropAreaRange = walledDropAreaRange;
     this._bricks = [];
-    this._brickCollisionCallback = brickCollisionCallback;
+    this._cleanUpCallback = cleanUpCallback;
+    this._stateCallbacks = stateCallbacks;
+
+    this.runChildUpdate = true;
+
+    this.createMultiple({
+      frameQuantity: 3,
+      key: "brick",
+      active: false,
+      visible: false,
+      classType: Brick,
+    });
   }
 
   start() {
     this._timerId = setInterval(
-      () => this.add(),
+      () => this.dropBrick(),
       BrickPool.generateSpawnTimeout()
     );
   }
 
-  add() {
+  dropBrick() {
     let dropArea = BrickPool.decideDropArea();
     let startingPosition = BrickPool.decideStartingPosition(
       dropArea,
       this._walledDropAreaRange
     );
 
-    let addedBrick = new Brick(
-      this._scene,
+    let brick: Brick = this.getFirstDead(false);
+
+    if (!brick) {
+      return;
+    }
+
+    brick.drop(
       startingPosition.x,
       startingPosition.y,
-      "brick"
+      BrickPool.generateGravity()
     );
-
-    this._bricks.push(addedBrick);
-
-    addedBrick.setImmovable(true);
-
-    this._scene.physics.add.collider(
-      addedBrick,
-      this._player,
-      (brick, player) => this._brickCollisionCallback()
-    );
-
-    addedBrick.setGravityY(BrickPool.generateGravity());
   }
 
-  update(
-    cleanUpCallback: (brick: Brick) => boolean,
-    stateCallbacks: ((brick: Brick) => void)[]
-  ) {
-    this.cleanUp(cleanUpCallback);
-    for (let j = 0; j < this._bricks.length; j++) {
-      const brick = this._bricks[j];
-      for (let i = 0; i < stateCallbacks.length; i++) {
-        stateCallbacks[i](brick);
+  update() {
+    this.children.iterate((item) => {
+      let brick = <Brick>item;
+      if (this._cleanUpCallback(brick)) {
+        this.killAndHide(brick);
       }
-    }
-  }
-
-  cleanUp(cleanUpCallback: (brick: Brick) => boolean) {
-    for (let i = this._bricks.length - 1; i > -1; i--) {
-      let brickToClean = this._bricks[i];
-      if (cleanUpCallback(brickToClean)) {
-        this._bricks.splice(i, 1);
-        brickToClean.destroy();
+      for (let i = 0; i < this._stateCallbacks.length; i++) {
+        this._stateCallbacks[i](brick);
       }
-    }
+    });
   }
 
   static generateGravity(): number {

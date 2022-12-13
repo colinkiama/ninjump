@@ -106,15 +106,24 @@ export default class Demo extends Phaser.Scene {
       min: WALL_WIDTH,
       max: this.renderer.width - WALL_WIDTH,
     };
-    this._brickPool = new BrickPool(this, this._player, dropAreaRange, () =>
-      this.brickHitPlayer()
+    this._brickPool = new BrickPool(
+      this,
+      this._player,
+      dropAreaRange,
+      (brick) => this.checkIfBrickColiidedWithPit(brick),
+      [
+        (brick) => this.updateScore(brick),
+        (brick) => this.checkIfbrickHitPlayer(brick),
+      ]
     );
 
     this._brickPool.start();
   }
 
-  brickHitPlayer(): void {
-    this.gameOver();
+  checkIfbrickHitPlayer(brick: Brick) {
+    if (this.physics.collide(brick, this._player)) {
+      this.gameOver();
+    }
   }
 
   slip(): void {
@@ -152,10 +161,7 @@ export default class Demo extends Phaser.Scene {
   }
 
   update() {
-    this._brickPool.update(
-      (brick) => this.checkIfBrickColiidedWithPit(brick),
-      [(brick) => this.updateScore(brick)]
-    );
+    this._brickPool.update();
 
     if (!this.playerCanJump()) {
       return;
