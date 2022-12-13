@@ -5,7 +5,7 @@ type ButtonStyle = {
     right: number;
     bottom: number;
   };
-  backgroundColor?: number | undefined;
+  backgroundColor: number;
   border?:
     | {
         width?: number;
@@ -18,6 +18,7 @@ type ButtonStyle = {
 export default class Button extends Phaser.GameObjects.Container {
   private _text: Phaser.GameObjects.Text;
   private _buttonGraphics!: Phaser.GameObjects.Rectangle;
+  private _buttonStyle: ButtonStyle;
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -40,8 +41,10 @@ export default class Button extends Phaser.GameObjects.Container {
     );
 
     super(scene, x, y, [buttonGraphics, textObject]);
+
     this._text = textObject;
     this._buttonGraphics = buttonGraphics;
+    this._buttonStyle = buttonStyle;
 
     // In future, use: Phaser.Display.Align.In.Center(textObject, this);
     textObject.x = this.width / 2 - textObject.width / 2;
@@ -71,6 +74,14 @@ export default class Button extends Phaser.GameObjects.Container {
 
     this.on("pointerover", () => {
       this._buttonGraphics.fillColor = 0x0000ff;
+    });
+
+    this.on("pointerout", () => {
+      this._buttonGraphics.fillColor = this._buttonStyle.backgroundColor;
+    });
+
+    this.on("pointerdown", () => {
+      clickCallback();
     });
 
     this.scene.add.existing(this);

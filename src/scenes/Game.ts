@@ -195,11 +195,8 @@ export default class Demo extends Phaser.Scene {
       return;
     }
 
+    this._brickPool.stop();
     this.scene.pause();
-    // console.log("It's game over huh");
-    // this.scene.setActive(true, "GameOver");
-    let gameOverScene = this.scene.add("GameOver", GameOver, true);
-    // this.scene.bringToTop("GameOver");
-    // this.scene.launch(new GameOver());
+    this.scene.launch("GameOver");
   }
 }

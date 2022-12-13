@@ -3,7 +3,7 @@ import Button from "../objects/Button";
 
 export default class GameOver extends Phaser.Scene {
   constructor() {
-    super({ key: "GameOver", active: true });
+    super("GameOver");
   }
 
   create() {
@@ -40,7 +40,11 @@ export default class GameOver extends Phaser.Scene {
           bottom: 4,
         },
       },
-      () => this.scene.start("Game")
+      () => {
+        let gameScene = this.scene.get("GameScene");
+        gameScene.scene.restart();
+        this.scene.stop();
+      }
     );
 
     playAgainButton.setPosition(
