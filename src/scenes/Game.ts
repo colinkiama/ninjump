@@ -20,7 +20,7 @@ enum PlayerCollisionState {
 }
 
 export default class Demo extends Phaser.Scene {
-  private _player!: Phaser.Physics.Arcade.Image;
+  private _player!: Phaser.Physics.Arcade.Sprite;
   private _keySpace!: Phaser.Input.Keyboard.Key;
   private _leftWall!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
   private _rightWall!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
@@ -41,11 +41,16 @@ export default class Demo extends Phaser.Scene {
   }
 
   create() {
-    this._player = this.physics.add.image(
-      PLAYER_SIZE / 2 + WALL_WIDTH - 1,
-      this.renderer.height / 2 - PLAYER_SIZE / 2 - 50,
-      "player"
-    );
+    this._player = this.physics.add
+      .sprite(
+        PLAYER_SIZE / 2 + WALL_WIDTH - 1,
+        this.renderer.height / 2 - PLAYER_SIZE / 2 - 50,
+        "player"
+      )
+      .setScale(0.1);
+
+    this._player.width = this._player.width * 0.1;
+    this._player.height = this._player.height * 0.1;
 
     this._leftWall = this.physics.add.staticImage(
       WALL_WIDTH / 2,
@@ -165,6 +170,18 @@ export default class Demo extends Phaser.Scene {
       this._currentPlayerCollisionState = PlayerCollisionState.OnLeftWall;
     } else {
       this._currentPlayerCollisionState = PlayerCollisionState.OnRightWall;
+    }
+
+    this.updatePlayerFlip(this._currentPlayerCollisionState);
+  }
+  updatePlayerFlip(_currentPlayerCollisionState: PlayerCollisionState) {
+    switch (this._currentPlayerCollisionState) {
+      case PlayerCollisionState.OnLeftWall:
+        this._player.setFlipX(false);
+        break;
+      case PlayerCollisionState.OnRightWall:
+        this._player.setFlipX(true);
+        break;
     }
   }
 
