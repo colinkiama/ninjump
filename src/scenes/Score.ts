@@ -10,7 +10,7 @@ export default class Score extends Phaser.Scene {
     this._amount = 0;
 
     this._labelText = this.add
-      .text(24, 12, "Score", {
+      .text(0, 0, "Score", {
         fontFamily: "Helvetica",
         fontSize: "0.75rem",
       })
@@ -20,10 +20,13 @@ export default class Score extends Phaser.Scene {
       .text(0, 0, "0", {
         fontFamily: "Helvetica",
         fontSize: "1.25rem",
+        align: "right",
       })
       .setDepth(2);
 
-    Phaser.Display.Align.In.BottomLeft(this._labelText, this._scoreText);
+    this._scoreText.setX(this._labelText.x).setY(this._labelText.height + 4);
+
+    this.add.container(24, 12, [this._labelText, this._scoreText]);
 
     let gameScene = this.scene.get("GameScene");
 
