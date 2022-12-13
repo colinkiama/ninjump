@@ -106,6 +106,7 @@ export default class Demo extends Phaser.Scene {
       min: WALL_WIDTH,
       max: this.renderer.width - WALL_WIDTH,
     };
+
     this._brickPool = new BrickPool(
       this,
       this._player,
