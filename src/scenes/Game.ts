@@ -154,6 +154,11 @@ export default class Demo extends Phaser.Scene {
   }
 
   update() {
+    this._brickPool.update(
+      (brick) => this.checkIfBrickColiidedWithPit(brick),
+      [(brick) => this.updateScore(brick)]
+    );
+
     if (!this.playerCanJump()) {
       return;
     }
@@ -192,13 +197,10 @@ export default class Demo extends Phaser.Scene {
     this._canSlip = value;
   }
 
-  checkIfBrickAvoided(brick: Brick): boolean {
+  updateScore(brick: Brick) {
     if (this._player.y < brick.y + brick.height / 2) {
       console.log("Score + 1");
-      return true;
     }
-
-    return false;
   }
 
   checkIfBrickColiidedWithPit(brick: Brick) {

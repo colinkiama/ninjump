@@ -77,6 +77,12 @@ export default class BrickPool {
 
     addedBrick.setGravityY(BrickPool.generateGravity());
   }
+
+  update(
+    cleanUpCallback: (brick: Brick) => boolean,
+    stateCallbacks: ((brick: Brick) => void)[]
+  ) {}
+
   static generateGravity(): number {
     return (
       Math.random() * (MAX_BRICK_GRAVITY - MIN_BRICK_GRAVITY) +
