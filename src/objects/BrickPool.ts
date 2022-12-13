@@ -156,9 +156,9 @@ export default class BrickPool extends Phaser.Physics.Arcade.Group {
   static decideDropArea() {
     let randomValue = Math.random();
 
-    if (randomValue < 0.1) {
+    if (randomValue < 0.3) {
       return DropArea.Middle;
-    } else if (randomValue < 0.55) {
+    } else if (randomValue < 0.65) {
       return DropArea.Left;
     } else {
       return DropArea.Right;
