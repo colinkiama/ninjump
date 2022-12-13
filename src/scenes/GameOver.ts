@@ -14,7 +14,7 @@ export default class GameOver extends Phaser.Scene {
         fontFamily: "Helvetica",
         align: "center",
       })
-      .setDepth(2);
+      .setDepth(3);
 
     gameOverText.x = this.renderer.width / 2 - gameOverText.width / 2;
     gameOverText.y = this.renderer.height / 2 - gameOverText.height / 2;

@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import BrickPool from "../objects/BrickPool";
 import SlipTimer from "../objects/SlipTimer";
 import Brick from "./Brick";
-import GameOver from "./GameOver";
+import Score from "./Score";
 
 const PLAYER_SIZE = 32;
 const PLAYER_GRAVITY = 200;
@@ -29,6 +29,7 @@ export default class Demo extends Phaser.Scene {
   private _canSlip!: boolean;
   private _brickPool!: BrickPool;
   private _pit!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
+  private _score!: Score;
 
   constructor() {
     super("GameScene");
@@ -118,6 +119,7 @@ export default class Demo extends Phaser.Scene {
       ]
     );
 
+    this.scene.launch("Score");
     this._brickPool.start();
   }
 
@@ -207,8 +209,8 @@ export default class Demo extends Phaser.Scene {
       return;
     }
 
-    if (this._player.y < brick.y + brick.height / 2) {
-      console.log("Score + 1");
+    if (this._player.y + this._player.height / 2 < brick.y - brick.height / 2) {
+      this._score.increment();
       brick.avoided = true;
     }
   }
