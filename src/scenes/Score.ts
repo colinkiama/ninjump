@@ -14,6 +14,18 @@ export default class Score extends Phaser.Scene {
         fontSize: "0.75rem",
       })
       .setDepth(2);
+
+    let gameScene = this.scene.get("GameScene");
+
+    gameScene.events.on("IncrementScore", () => {
+      this._amount = this._amount + 1;
+      this.updateText();
+    });
+
+    gameScene.events.on("ResetScore", () => {
+      this._amount = 0;
+      this.updateText();
+    });
   }
 
   increment() {

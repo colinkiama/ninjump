@@ -1,4 +1,4 @@
-import Brick from "../scenes/Brick";
+import Brick from "./Brick";
 import { WallJump } from "./Range";
 
 const BRICK_WIDTH = 16;
