@@ -17,7 +17,7 @@ const MIN_SPAWN_INTERVAL = 2000; // Milliseconds
 const MAX_SPAWN_INTERVAL = 3000; // Milliseconds
 
 export default class BrickPool {
-  private _player: Phaser.Types.Physics.Arcade.GameObjectWithDynamicBody;
+  private _player: Phaser.Physics.Arcade.Image;
   private _scene: Phaser.Scene;
   private _walledDropAreaRange: WallJump.Range;
   private _brickCollisionCallback: () => void;
@@ -33,7 +33,7 @@ export default class BrickPool {
 
   constructor(
     scene: Phaser.Scene,
-    player: Phaser.Types.Physics.Arcade.GameObjectWithDynamicBody,
+    player: Phaser.Physics.Arcade.Image,
     walledDropAreaRange: WallJump.Range,
     brickCollisionCallback: () => void
   ) {

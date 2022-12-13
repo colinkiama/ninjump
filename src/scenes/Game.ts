@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import BrickPool from "../objects/BrickPool";
 import SlipTimer from "../objects/SlipTimer";
+import Brick from "./Brick";
 import GameOver from "./GameOver";
 
 const PLAYER_SIZE = 32;
@@ -19,7 +20,7 @@ enum PlayerCollisionState {
 }
 
 export default class Demo extends Phaser.Scene {
-  private _player!: Phaser.Types.Physics.Arcade.GameObjectWithDynamicBody;
+  private _player!: Phaser.Physics.Arcade.Image;
   private _keySpace!: Phaser.Input.Keyboard.Key;
   private _leftWall!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
   private _rightWall!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
@@ -27,6 +28,7 @@ export default class Demo extends Phaser.Scene {
   private _slipTimer!: SlipTimer;
   private _canSlip!: boolean;
   private _brickPool!: BrickPool;
+  private _pit!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
 
   constructor() {
     super("GameScene");
@@ -64,7 +66,7 @@ export default class Demo extends Phaser.Scene {
     this.physics.add.existing(ceiling);
     ceiling.body.immovable = true;
 
-    let pit = <Phaser.Types.Physics.Arcade.GameObjectWithStaticBody>(
+    this._pit = <Phaser.Types.Physics.Arcade.GameObjectWithStaticBody>(
       this.add.zone(
         this.renderer.width / 2,
         this.renderer.height + 100,
@@ -73,8 +75,8 @@ export default class Demo extends Phaser.Scene {
       )
     );
 
-    this.physics.add.existing(pit);
-    pit.body.immovable = true;
+    this.physics.add.existing(this._pit);
+    this._pit.body.immovable = true;
 
     this._slipTimer = new SlipTimer();
 
@@ -88,11 +90,11 @@ export default class Demo extends Phaser.Scene {
 
     this.physics.add.collider(this._player, ceiling);
 
-    this.physics.add.collider(this._player, pit, (player, pit) => {
+    this.physics.add.collider(this._player, this._pit, (player, pit) => {
       this.gameOver();
     });
 
-    this._player.body.setGravityY(PLAYER_GRAVITY);
+    this._player.setGravityY(PLAYER_GRAVITY);
 
     this._keySpace = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE
@@ -120,10 +122,10 @@ export default class Demo extends Phaser.Scene {
     console.log("SLip collision state:", this._currentPlayerCollisionState);
     switch (this._currentPlayerCollisionState) {
       case PlayerCollisionState.OnLeftWall:
-        this._player.body.setVelocityX(100);
+        this._player.setVelocityX(100);
         break;
       case PlayerCollisionState.OnRightWall:
-        this._player.body.setVelocityX(-100);
+        this._player.setVelocityX(-100);
         break;
     }
 
@@ -164,12 +166,12 @@ export default class Demo extends Phaser.Scene {
 
       switch (this._currentPlayerCollisionState) {
         case PlayerCollisionState.OnLeftWall:
-          this._player.body.setVelocity(JUMP_X_VELOCITY, -JUMP_Y_VELOCITY);
+          this._player.setVelocity(JUMP_X_VELOCITY, -JUMP_Y_VELOCITY);
           this._currentPlayerCollisionState =
             PlayerCollisionState.JumpingToWall;
           break;
         case PlayerCollisionState.OnRightWall:
-          this._player.body.setVelocity(-JUMP_X_VELOCITY, -JUMP_Y_VELOCITY);
+          this._player.setVelocity(-JUMP_X_VELOCITY, -JUMP_Y_VELOCITY);
           this._currentPlayerCollisionState =
             PlayerCollisionState.JumpingToWall;
           break;
@@ -188,6 +190,19 @@ export default class Demo extends Phaser.Scene {
 
   setCanSlip(value: boolean) {
     this._canSlip = value;
+  }
+
+  checkIfBrickAvoided(brick: Brick): boolean {
+    if (this._player.y < brick.y + brick.height / 2) {
+      console.log("Score + 1");
+      return true;
+    }
+
+    return false;
+  }
+
+  checkIfBrickColiidedWithPit(brick: Brick) {
+    return this.physics.collide(brick, this._pit);
   }
 
   gameOver() {
