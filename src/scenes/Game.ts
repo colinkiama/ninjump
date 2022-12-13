@@ -198,8 +198,13 @@ export default class Demo extends Phaser.Scene {
   }
 
   updateScore(brick: Brick) {
+    if (brick.avoided) {
+      return;
+    }
+
     if (this._player.y < brick.y + brick.height / 2) {
       console.log("Score + 1");
+      brick.avoided = true;
     }
   }
 
