@@ -1,3 +1,4 @@
+import Brick from "../scenes/Brick";
 import { WallJump } from "./Range";
 
 const BRICK_WIDTH = 16;
@@ -55,13 +56,14 @@ export default class BrickPool {
       this._walledDropAreaRange
     );
 
-    let addedBrick = this._scene.physics.add.image(
+    let addedBrick = new Brick(
+      this._scene,
       startingPosition.x,
       startingPosition.y,
       "brick"
     );
 
-    addedBrick.body.setImmovable(true);
+    addedBrick.setImmovable(true);
 
     this._scene.physics.add.collider(
       addedBrick,
@@ -113,9 +115,6 @@ export default class BrickPool {
     }
   }
 
-  //   static generateStartingXPosition(minValue: number, maxValue: number) {
-  //     return Math.random() * (maxValue - minValue) + minValue + BRICK_WIDTH / 2;
-  //   }
   static generateStartingXPosition(
     dropAreaRange: WallJump.Range,
     areaPortionRange: WallJump.Range
