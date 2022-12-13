@@ -81,7 +81,25 @@ export default class BrickPool {
   update(
     cleanUpCallback: (brick: Brick) => boolean,
     stateCallbacks: ((brick: Brick) => void)[]
-  ) {}
+  ) {
+    this.cleanUp(cleanUpCallback);
+    for (let j = 0; j < this._bricks.length; j++) {
+      const brick = this._bricks[j];
+      for (let i = 0; i < stateCallbacks.length; i++) {
+        stateCallbacks[i](brick);
+      }
+    }
+  }
+
+  cleanUp(cleanUpCallback: (brick: Brick) => boolean) {
+    for (let i = this._bricks.length; i >= -1; i--) {
+      let brickToClean = this._bricks[i];
+      if (cleanUpCallback(brickToClean)) {
+        this._bricks.splice(i, 1);
+        brickToClean.destroy();
+      }
+    }
+  }
 
   static generateGravity(): number {
     return (
