@@ -92,7 +92,7 @@ export default class BrickPool {
   }
 
   cleanUp(cleanUpCallback: (brick: Brick) => boolean) {
-    for (let i = this._bricks.length; i >= -1; i--) {
+    for (let i = this._bricks.length - 1; i > -1; i--) {
       let brickToClean = this._bricks[i];
       if (cleanUpCallback(brickToClean)) {
         this._bricks.splice(i, 1);

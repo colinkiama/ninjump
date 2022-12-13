@@ -106,7 +106,6 @@ export default class Demo extends Phaser.Scene {
       min: WALL_WIDTH,
       max: this.renderer.width - WALL_WIDTH,
     };
-    console.log("Drop area range:", dropAreaRange);
     this._brickPool = new BrickPool(this, this._player, dropAreaRange, () =>
       this.brickHitPlayer()
     );
@@ -119,7 +118,6 @@ export default class Demo extends Phaser.Scene {
   }
 
   slip(): void {
-    console.log("SLip collision state:", this._currentPlayerCollisionState);
     switch (this._currentPlayerCollisionState) {
       case PlayerCollisionState.OnLeftWall:
         this._player.setVelocityX(100);
