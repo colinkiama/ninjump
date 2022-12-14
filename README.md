@@ -2,6 +2,8 @@
 
 ![Ninjump Screenshot](./img/screenshot.png)
 
+Play it on itch.io now: https://colinkiama.itch.io/ninjump
+
 This is built from @goecine's [Phaser 3 Rollup TypeScript template](https://github.com/geocine/phaser3-rollup-typescript)
 
 ## Description
