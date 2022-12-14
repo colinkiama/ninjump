@@ -17,13 +17,19 @@ const MIN_SPAWN_INTERVAL = 2000; // Milliseconds
 const MAX_SPAWN_INTERVAL = 3000; // Milliseconds
 
 export default class BrickPool extends Phaser.Physics.Arcade.Group {
-  private _player: Phaser.Physics.Arcade.Image;
-  private _scene: Phaser.Scene;
+  freeze() {
+    this.stop();
+    this.children.iterate((item) => {
+      let brick = <Brick>item;
+      brick.setGravityY(0);
+      brick.setVelocityY(0);
+    });
+  }
+
   private _walledDropAreaRange: WallJump.Range;
   private _cleanUpCallback: (brick: Brick) => boolean;
   private _stateCallbacks: ((brick: Brick) => void)[];
   private _timerId!: number;
-  private _bricks: Brick[];
 
   static generateSpawnTimeout(): number | undefined {
     return (
@@ -34,17 +40,13 @@ export default class BrickPool extends Phaser.Physics.Arcade.Group {
 
   constructor(
     scene: Phaser.Scene,
-    player: Phaser.Physics.Arcade.Image,
     walledDropAreaRange: WallJump.Range,
     cleanUpCallback: (brick: Brick) => boolean,
     stateCallbacks: ((brick: Brick) => void)[]
   ) {
     super(scene.physics.world, scene);
 
-    this._player = player;
-    this._scene = scene;
     this._walledDropAreaRange = walledDropAreaRange;
-    this._bricks = [];
     this._cleanUpCallback = cleanUpCallback;
     this._stateCallbacks = stateCallbacks;
 

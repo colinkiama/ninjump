@@ -22,8 +22,8 @@ enum PlayerCollisionState {
 export default class Demo extends Phaser.Scene {
   private _player!: Phaser.Physics.Arcade.Sprite;
   private _keySpace!: Phaser.Input.Keyboard.Key;
-  private _leftWall!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
-  private _rightWall!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
+  private _leftWall!: Phaser.Types.Physics.Arcade.ImageWithStaticBody;
+  private _rightWall!: Phaser.Types.Physics.Arcade.ImageWithStaticBody;
   private _currentPlayerCollisionState!: PlayerCollisionState;
   private _slipTimer!: SlipTimer;
   private _canSlip!: boolean;
@@ -58,11 +58,15 @@ export default class Demo extends Phaser.Scene {
       "wall"
     );
 
+    this._leftWall.displayHeight = this._leftWall.displayHeight * 2;
+
     this._rightWall = this.physics.add.staticImage(
       this.renderer.width - WALL_WIDTH / 2,
       this.renderer.height / 2,
       "wall"
     );
+
+    this._rightWall.displayHeight = this._rightWall.displayHeight * 2;
 
     let ceiling = <Phaser.Types.Physics.Arcade.GameObjectWithStaticBody>(
       this.add.zone(this.renderer.width / 2, 1 / 2, this.renderer.width, 1)
@@ -114,7 +118,6 @@ export default class Demo extends Phaser.Scene {
 
     this._brickPool = new BrickPool(
       this,
-      this._player,
       dropAreaRange,
       (brick) => this.checkIfBrickColiidedWithPit(brick),
       [
@@ -135,8 +138,22 @@ export default class Demo extends Phaser.Scene {
 
   checkIfbrickHitPlayer(brick: Brick) {
     if (this.physics.collide(brick, this._player)) {
-      this.gameOver();
+      this.cameras.main.shake(300, 0.02);
+      this.events.emit("PlayerHit");
+      this.freeze();
+
+      this.time.addEvent({
+        delay: 300,
+        callback: () => {
+          this.gameOver();
+        },
+      });
     }
+  }
+  freeze() {
+    this._brickPool.freeze();
+    this._player.body.velocity.reset();
+    this._player.body.gravity.reset();
   }
 
   slip(): void {

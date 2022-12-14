@@ -40,6 +40,10 @@ export default class Score extends Phaser.Scene {
       this._amount = 0;
       this.updateText();
     });
+
+    gameScene.events.on("PlayerHit", () => {
+      this.cameras.main.shake(300, 0.03);
+    });
   }
 
   increment() {
