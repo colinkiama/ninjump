@@ -1,4 +1,4 @@
-import { Game } from "phaser";
+import { Game, Tilemaps } from "phaser";
 import Button from "../objects/Button";
 
 export default class GameOver extends Phaser.Scene {
@@ -51,5 +51,32 @@ export default class GameOver extends Phaser.Scene {
       this.renderer.width / 2 - playAgainButton.width / 2,
       this.renderer.height / 2 - playAgainButton.height / 2 + 50
     );
+
+    let orginalCameraY = this.cameras.main.y;
+    this.cameras.main.y = -this.renderer.height;
+
+    this.tweens.add({
+      targets: this.cameras.main,
+      y: orginalCameraY,
+      duration: 700,
+      delay: 300,
+      ease: "Elastic",
+      easeParams: [1.25, 1.5],
+    });
+
+    // this.tweens.timeline({
+    //   targets: this.cameras.main,
+    //   duration: 700,
+    //   ease: "Elastic",
+    //   easeParams: [0.5, 1.5],
+    //   tweens: [
+    //     {
+    //       y: -this.renderer.height,
+    //     },
+    //     {
+    //       y: orginalCameraY,
+    //     },
+    //   ],
+    // });
   }
 }
