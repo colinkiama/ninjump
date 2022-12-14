@@ -86,6 +86,7 @@ export default class Button extends Phaser.GameObjects.Container {
 
     this.scene.add.existing(this);
   }
+
   static checkIfPointIsInHitArea(
     hitAreaXRange: { min: number; max: number },
     hitAreaYRange: { min: number; max: number },

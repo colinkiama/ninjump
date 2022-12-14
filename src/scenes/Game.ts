@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import Phaser, { Tilemaps } from "phaser";
 import BrickPool from "../objects/BrickPool";
 import SlipTimer from "../objects/SlipTimer";
 import Brick from "../objects/Brick";
@@ -30,6 +30,7 @@ export default class Demo extends Phaser.Scene {
   private _canSlip!: boolean;
   private _brickPool!: BrickPool;
   private _pit!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
+  private _playerFellDownPit: boolean;
 
   constructor() {
     super("GameScene");
@@ -52,6 +53,8 @@ export default class Demo extends Phaser.Scene {
 
     this._player.width = this._player.width * 0.1;
     this._player.height = this._player.height * 0.1;
+
+    this._playerFellDownPit = false;
 
     this._leftWall = this.physics.add.staticImage(
       WALL_WIDTH / 2,
@@ -101,7 +104,7 @@ export default class Demo extends Phaser.Scene {
     this.physics.add.collider(this._player, ceiling);
 
     this.physics.add.collider(this._player, this._pit, (player, pit) => {
-      this.gameOver();
+      this.handlePitFall();
     });
 
     this._player.setGravityY(PLAYER_GRAVITY);
@@ -127,7 +130,6 @@ export default class Demo extends Phaser.Scene {
       ]
     );
 
-    let score = this.scene.get("Score");
     if (!this.scene.isActive("Score")) {
       this.scene.launch("Score");
     } else {
@@ -135,6 +137,24 @@ export default class Demo extends Phaser.Scene {
     }
 
     this._brickPool.start();
+  }
+
+  handlePitFall() {
+    if (this._playerFellDownPit) {
+      return;
+    }
+
+    this.events.emit("PlayerFellDownPit");
+    this.cameras.main.shake(1000, 0.02);
+    this._brickPool.freeze();
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        this.gameOver();
+      },
+    });
+    this._playerFellDownPit = true;
+    // this._brickPool.stop();
   }
 
   checkIfbrickHitPlayer(brick: Brick) {
@@ -148,6 +168,7 @@ export default class Demo extends Phaser.Scene {
       this._brickPool.stop();
     }
   }
+
   freeze() {
     this._brickPool.freeze();
     this._player.body.velocity.reset();
@@ -272,7 +293,6 @@ export default class Demo extends Phaser.Scene {
       return;
     }
 
-    this._brickPool.stop();
     this.scene.pause();
     this.scene.launch("GameOver");
   }
