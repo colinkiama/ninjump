@@ -1,6 +1,7 @@
 const BRICK_IMAGE = "brick";
 export default class Brick extends Phaser.Physics.Arcade.Image {
   avoided: boolean;
+  hitPlayer: boolean;
 
   constructor(
     scene: Phaser.Scene,
@@ -11,6 +12,7 @@ export default class Brick extends Phaser.Physics.Arcade.Image {
   ) {
     super(scene, x, y, texture, frame);
     this.avoided = false;
+    this.hitPlayer = false;
   }
 
   drop(x: number, y: number, gravityY: number) {
@@ -23,5 +25,6 @@ export default class Brick extends Phaser.Physics.Arcade.Image {
     this.setImmovable(true);
 
     this.avoided = false;
+    this.hitPlayer = false;
   }
 }

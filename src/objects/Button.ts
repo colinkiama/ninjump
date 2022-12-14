@@ -80,7 +80,7 @@ export default class Button extends Phaser.GameObjects.Container {
       this._buttonGraphics.fillColor = this._buttonStyle.backgroundColor;
     });
 
-    this.on("pointerdown", () => {
+    this.on("pointerup", () => {
       clickCallback();
     });
 

@@ -17,6 +17,7 @@ enum PlayerCollisionState {
   OnRightWall,
   JumpingToWall,
   Slipped,
+  Hit,
 }
 
 export default class Demo extends Phaser.Scene {
@@ -137,17 +138,14 @@ export default class Demo extends Phaser.Scene {
   }
 
   checkIfbrickHitPlayer(brick: Brick) {
-    if (this.physics.collide(brick, this._player)) {
-      this.cameras.main.shake(300, 0.02);
+    let brickCollidedWithPlayer = this.physics.collide(brick, this._player);
+    if (!brick.hitPlayer && brickCollidedWithPlayer) {
+      this.cameras.main.shake(200, 0.02);
       this.events.emit("PlayerHit");
-      this.freeze();
-
-      this.time.addEvent({
-        delay: 300,
-        callback: () => {
-          this.gameOver();
-        },
-      });
+      this._player.setVelocityY(100);
+      this._currentPlayerCollisionState = PlayerCollisionState.Hit;
+      brick.hitPlayer = true;
+      this._brickPool.stop();
     }
   }
   freeze() {
@@ -173,6 +171,13 @@ export default class Demo extends Phaser.Scene {
     player: Phaser.Types.Physics.Arcade.GameObjectWithBody,
     wall: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ): void {
+    if (
+      this._currentPlayerCollisionState == PlayerCollisionState.Hit ||
+      this._currentPlayerCollisionState == PlayerCollisionState.Slipped
+    ) {
+      return;
+    }
+
     if (
       (this._currentPlayerCollisionState == PlayerCollisionState.OnLeftWall ||
         this._currentPlayerCollisionState ==
@@ -209,7 +214,11 @@ export default class Demo extends Phaser.Scene {
       return;
     }
 
-    if (this._keySpace.isDown) {
+    if (
+      this._keySpace.isDown ||
+      (this.input.activePointer.wasTouch &&
+        this.input.activePointer.primaryDown)
+    ) {
       if (this._canSlip) {
         this.slip();
         return;
@@ -244,7 +253,7 @@ export default class Demo extends Phaser.Scene {
   }
 
   updateScore(brick: Brick) {
-    if (brick.avoided) {
+    if (brick.avoided || brick.hitPlayer) {
       return;
     }
 
