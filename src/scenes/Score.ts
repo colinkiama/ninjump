@@ -57,5 +57,13 @@ export default class Score extends Phaser.Scene {
 
   updateText() {
     this._scoreText.setText(`${this._amount}`);
+    this.tweens.add({
+      targets: this._scoreText,
+      scale: 1.1,
+      ease: "elastic",
+      easeParams: [0.1, 2.5],
+      yoyo: true,
+      duration: 100,
+    });
   }
 }

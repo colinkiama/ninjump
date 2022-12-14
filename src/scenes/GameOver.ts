@@ -63,20 +63,5 @@ export default class GameOver extends Phaser.Scene {
       ease: "Elastic",
       easeParams: [1.25, 1.5],
     });
-
-    // this.tweens.timeline({
-    //   targets: this.cameras.main,
-    //   duration: 700,
-    //   ease: "Elastic",
-    //   easeParams: [0.5, 1.5],
-    //   tweens: [
-    //     {
-    //       y: -this.renderer.height,
-    //     },
-    //     {
-    //       y: orginalCameraY,
-    //     },
-    //   ],
-    // });
   }
 }
