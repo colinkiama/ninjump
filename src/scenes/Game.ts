@@ -32,6 +32,7 @@ export default class Demo extends Phaser.Scene {
   private _pit!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
   private _playerFellDownPit!: boolean;
   private _afterImageEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
+  private _dustParticleEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
 
   constructor() {
     super("GameScene");
@@ -58,13 +59,25 @@ export default class Demo extends Phaser.Scene {
 
     this._playerFellDownPit = false;
 
-    let particles = this.add.particles("player");
+    let afterImageParticles = this.add.particles("player");
 
-    this._afterImageEmitter = particles.createEmitter({
+    this._afterImageEmitter = afterImageParticles.createEmitter({
       scale: 0.1,
       speed: 0.1,
       alpha: { start: 0.5, end: 0 },
       lifespan: 100,
+      on: false,
+      follow: this._player,
+    });
+
+    let dustParticles = this.add.particles("dust");
+
+    this._dustParticleEmitter = dustParticles.createEmitter({
+      speed: { min: -150, max: 150 },
+      scale: { start: 0.3, end: 0 },
+      on: false,
+      lifespan: 300,
+      gravityY: 800,
     });
 
     this._leftWall = this.physics.add.staticImage(
@@ -114,7 +127,7 @@ export default class Demo extends Phaser.Scene {
 
     this.physics.add.collider(this._player, ceiling);
 
-    this.physics.add.collider(this._player, this._pit, (player, pit) => {
+    this.physics.add.overlap(this._player, this._pit, (player, pit) => {
       this.handlePitFall();
     });
 
@@ -134,7 +147,7 @@ export default class Demo extends Phaser.Scene {
     this._brickPool = new BrickPool(
       this,
       dropAreaRange,
-      (brick) => this.checkIfBrickColiidedWithPit(brick),
+      (brick) => this.checkIfBrickFellIntoPit(brick),
       [
         (brick) => this.updateScore(brick),
         (brick) => this.checkIfbrickHitPlayer(brick),
@@ -156,7 +169,7 @@ export default class Demo extends Phaser.Scene {
     }
 
     this.events.emit("PlayerFellDownPit");
-    this.cameras.main.shake(1000, 0.02);
+    this.cameras.main.shake(1000, 0.02, true);
     this._brickPool.freeze();
     this.time.addEvent({
       delay: 1000,
@@ -171,6 +184,7 @@ export default class Demo extends Phaser.Scene {
   checkIfbrickHitPlayer(brick: Brick) {
     let brickCollidedWithPlayer = this.physics.collide(brick, this._player);
     if (!brick.hitPlayer && brickCollidedWithPlayer) {
+      this._afterImageEmitter.stop();
       this.cameras.main.shake(200, 0.02);
       this.events.emit("PlayerHit");
       this._player.setVelocityY(100);
@@ -178,12 +192,6 @@ export default class Demo extends Phaser.Scene {
       brick.hitPlayer = true;
       this._brickPool.stop();
     }
-  }
-
-  freeze() {
-    this._brickPool.freeze();
-    this._player.body.velocity.reset();
-    this._player.body.gravity.reset();
   }
 
   slip(): void {
@@ -197,6 +205,7 @@ export default class Demo extends Phaser.Scene {
     }
 
     this._currentPlayerCollisionState = PlayerCollisionState.Slipped;
+    this._afterImageEmitter.stop();
   }
 
   handleWallCollision(
@@ -207,7 +216,6 @@ export default class Demo extends Phaser.Scene {
       this._currentPlayerCollisionState == PlayerCollisionState.Hit ||
       this._currentPlayerCollisionState == PlayerCollisionState.Slipped
     ) {
-      this._afterImageEmitter.stopFollow();
       return;
     }
 
@@ -228,8 +236,9 @@ export default class Demo extends Phaser.Scene {
     }
 
     this.updatePlayerFlip(this._currentPlayerCollisionState);
-    this._afterImageEmitter.stopFollow();
+    this._afterImageEmitter.stop();
   }
+
   updatePlayerFlip(_currentPlayerCollisionState: PlayerCollisionState) {
     switch (this._currentPlayerCollisionState) {
       case PlayerCollisionState.OnLeftWall:
@@ -263,13 +272,15 @@ export default class Demo extends Phaser.Scene {
           this._player.setVelocity(JUMP_X_VELOCITY, -JUMP_Y_VELOCITY);
           this._currentPlayerCollisionState =
             PlayerCollisionState.JumpingToWall;
-          this._afterImageEmitter.startFollow(this._player);
+          this._afterImageEmitter.start();
+          this._dustParticleEmitter.explode(5, this._player.x, this._player.y);
           break;
         case PlayerCollisionState.OnRightWall:
           this._player.setVelocity(-JUMP_X_VELOCITY, -JUMP_Y_VELOCITY);
           this._currentPlayerCollisionState =
             PlayerCollisionState.JumpingToWall;
-          this._afterImageEmitter.startFollow(this._player);
+          this._afterImageEmitter.start();
+          this._dustParticleEmitter.explode(5, this._player.x, this._player.y);
           break;
       }
     }
@@ -299,8 +310,8 @@ export default class Demo extends Phaser.Scene {
     }
   }
 
-  checkIfBrickColiidedWithPit(brick: Brick) {
-    return this.physics.collide(brick, this._pit);
+  checkIfBrickFellIntoPit(brick: Brick) {
+    return this.physics.overlap(brick, this._pit);
   }
 
   gameOver() {
