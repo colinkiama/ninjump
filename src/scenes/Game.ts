@@ -31,7 +31,7 @@ export default class Demo extends Phaser.Scene {
   private _brickPool!: BrickPool;
   private _pit!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
   private _playerFellDownPit!: boolean;
-  private _dustEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
+  private _afterImageEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
 
   constructor() {
     super("GameScene");
@@ -59,11 +59,11 @@ export default class Demo extends Phaser.Scene {
     this._playerFellDownPit = false;
 
     let particles = this.add.particles("player");
-    this._dustEmitter = particles.createEmitter({
+
+    this._afterImageEmitter = particles.createEmitter({
       scale: 0.1,
       speed: 0.1,
       alpha: { start: 0.5, end: 0 },
-      follow: this._player,
       lifespan: 100,
     });
 
@@ -207,6 +207,7 @@ export default class Demo extends Phaser.Scene {
       this._currentPlayerCollisionState == PlayerCollisionState.Hit ||
       this._currentPlayerCollisionState == PlayerCollisionState.Slipped
     ) {
+      this._afterImageEmitter.stopFollow();
       return;
     }
 
@@ -227,6 +228,7 @@ export default class Demo extends Phaser.Scene {
     }
 
     this.updatePlayerFlip(this._currentPlayerCollisionState);
+    this._afterImageEmitter.stopFollow();
   }
   updatePlayerFlip(_currentPlayerCollisionState: PlayerCollisionState) {
     switch (this._currentPlayerCollisionState) {
@@ -261,11 +263,13 @@ export default class Demo extends Phaser.Scene {
           this._player.setVelocity(JUMP_X_VELOCITY, -JUMP_Y_VELOCITY);
           this._currentPlayerCollisionState =
             PlayerCollisionState.JumpingToWall;
+          this._afterImageEmitter.startFollow(this._player);
           break;
         case PlayerCollisionState.OnRightWall:
           this._player.setVelocity(-JUMP_X_VELOCITY, -JUMP_Y_VELOCITY);
           this._currentPlayerCollisionState =
             PlayerCollisionState.JumpingToWall;
+          this._afterImageEmitter.startFollow(this._player);
           break;
       }
     }
