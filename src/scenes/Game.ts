@@ -21,7 +21,7 @@ enum PlayerCollisionState {
 }
 
 export default class Demo extends Phaser.Scene {
-  private _player!: Phaser.Physics.Arcade.Sprite;
+  private _player!: Phaser.Physics.Arcade.Image;
   private _keySpace!: Phaser.Input.Keyboard.Key;
   private _leftWall!: Phaser.Types.Physics.Arcade.ImageWithStaticBody;
   private _rightWall!: Phaser.Types.Physics.Arcade.ImageWithStaticBody;
@@ -33,6 +33,7 @@ export default class Demo extends Phaser.Scene {
   private _playerFellDownPit!: boolean;
   private _afterImageEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
   private _dustParticleEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
+  private _wallSquashTween!: Phaser.Tweens.Tween;
 
   constructor() {
     super("GameScene");
@@ -56,6 +57,13 @@ export default class Demo extends Phaser.Scene {
 
     this._player.width = this._player.width * 0.1;
     this._player.height = this._player.height * 0.1;
+    this._wallSquashTween = this.tweens.add({
+      targets: this._player,
+      scaleY: 0.09,
+      ease: "bounce",
+      yoyo: true,
+      duration: 50,
+    });
 
     this._playerFellDownPit = false;
 
@@ -236,6 +244,7 @@ export default class Demo extends Phaser.Scene {
     }
 
     this.updatePlayerFlip(this._currentPlayerCollisionState);
+    this._wallSquashTween.play();
     this._afterImageEmitter.stop();
   }
 
