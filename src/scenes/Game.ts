@@ -30,7 +30,8 @@ export default class Demo extends Phaser.Scene {
   private _canSlip!: boolean;
   private _brickPool!: BrickPool;
   private _pit!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
-  private _playerFellDownPit: boolean;
+  private _playerFellDownPit!: boolean;
+  private _dustEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
 
   constructor() {
     super("GameScene");
@@ -40,6 +41,7 @@ export default class Demo extends Phaser.Scene {
     this.load.image("player", "assets/player.png");
     this.load.image("wall", "assets/wall.png");
     this.load.image("brick", "assets/brick.png");
+    this.load.image("dust", "assets/dust.png");
   }
 
   create() {
@@ -55,6 +57,15 @@ export default class Demo extends Phaser.Scene {
     this._player.height = this._player.height * 0.1;
 
     this._playerFellDownPit = false;
+
+    let particles = this.add.particles("player");
+    this._dustEmitter = particles.createEmitter({
+      scale: 0.1,
+      speed: 0.1,
+      alpha: { start: 0.5, end: 0 },
+      follow: this._player,
+      lifespan: 100,
+    });
 
     this._leftWall = this.physics.add.staticImage(
       WALL_WIDTH / 2,
