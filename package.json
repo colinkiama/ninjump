@@ -1,6 +1,6 @@
 {
   "name": "ninjump",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Wall jumping game made for One Minute Jump 9",
   "main": "dist/index.js",
   "scripts": {
