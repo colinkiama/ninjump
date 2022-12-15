@@ -11,7 +11,7 @@ export default class Score extends Phaser.Scene {
 
     this._labelText = this.add
       .text(0, 0, "Score", {
-        fontFamily: "Helvetica",
+        fontFamily: "sans-serif",
         fontSize: "0.75rem",
         fontStyle: "strong",
       })
@@ -19,7 +19,7 @@ export default class Score extends Phaser.Scene {
 
     this._scoreText = this.add
       .text(0, 0, "0", {
-        fontFamily: "Helvetica",
+        fontFamily: "sans-serif",
         fontSize: "1.25rem",
         align: "right",
       })

@@ -11,7 +11,7 @@ export default class GameOver extends Phaser.Scene {
       .text(0, 0, "Game Over", {
         color: "#ffffff",
         fontSize: "2rem",
-        fontFamily: "Helvetica",
+        fontFamily: "sans-serif",
         align: "center",
       })
       .setDepth(3);
@@ -29,7 +29,7 @@ export default class GameOver extends Phaser.Scene {
         color: "#ffffff",
         fontSize: "1rem",
         align: "center",
-        fontFamily: "Helvetica",
+        fontFamily: "sans-serif",
       },
       {
         backgroundColor: 0xff0000,
