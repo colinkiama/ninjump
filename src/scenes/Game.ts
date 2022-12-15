@@ -63,6 +63,7 @@ export default class Demo extends Phaser.Scene {
       ease: "bounce",
       yoyo: true,
       duration: 50,
+      paused: true,
     });
 
     this._playerFellDownPit = false;
@@ -244,8 +245,9 @@ export default class Demo extends Phaser.Scene {
     }
 
     this.updatePlayerFlip(this._currentPlayerCollisionState);
-    this._wallSquashTween.play();
     this._afterImageEmitter.stop();
+
+    this._wallSquashTween.play();
   }
 
   updatePlayerFlip(_currentPlayerCollisionState: PlayerCollisionState) {
