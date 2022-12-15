@@ -16,9 +16,10 @@ Avoid as many bricks as you can. Good luck!
 
 ## Controls
 
-| Key     | Action |
-| ------- | ------ |
-| `Space` | Jump   |
+| Input          | Action |
+| -------------- | ------ |
+| `Space`        | Jump   |
+| `Touch Screen` | Jump   |
 
 ## Development
 
