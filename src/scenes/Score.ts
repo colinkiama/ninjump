@@ -38,7 +38,7 @@ export default class Score extends Phaser.Scene {
 
     gameScene.events.on("ResetScore", () => {
       this._amount = 0;
-      this.updateText();
+      this.setScoreText(this._amount);
     });
 
     gameScene.events.on("PlayerHit", () => {
@@ -56,7 +56,7 @@ export default class Score extends Phaser.Scene {
   }
 
   updateText() {
-    this._scoreText.setText(`${this._amount}`);
+    this.setScoreText(this._amount);
     this.tweens.add({
       targets: this._scoreText,
       scale: 1.2,
@@ -64,5 +64,9 @@ export default class Score extends Phaser.Scene {
       yoyo: true,
       duration: 100,
     });
+  }
+
+  setScoreText(value: number) {
+    this._scoreText.setText(`${value}`);
   }
 }
