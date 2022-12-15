@@ -268,11 +268,7 @@ export default class Demo extends Phaser.Scene {
       return;
     }
 
-    if (
-      this._keySpace.isDown ||
-      (this.input.activePointer.wasTouch &&
-        this.input.activePointer.primaryDown)
-    ) {
+    if (this._keySpace.isDown || this.input.activePointer.primaryDown) {
       if (this._canSlip) {
         this.slip();
         return;
