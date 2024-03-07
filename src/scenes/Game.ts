@@ -96,12 +96,15 @@ export default class Demo extends Phaser.Scene {
     );
 
     this._leftWall.displayHeight = this._leftWall.displayHeight * 2;
+    this._leftWall.body.immovable = true;
 
     this._rightWall = this.physics.add.staticImage(
       this.renderer.width - WALL_WIDTH / 2,
       this.renderer.height / 2,
       "wall"
     );
+
+    this._rightWall.body.immovable = true;
 
     this._rightWall.displayHeight = this._rightWall.displayHeight * 2;
 
@@ -236,6 +239,7 @@ export default class Demo extends Phaser.Scene {
       this._slipTimer.start(() => this.setCanSlip(false));
       this.setCanSlip(true);
       player.body.velocity.y = 0;
+      player.body.velocity.x = 0;
     }
 
     if (wall === this._leftWall) {
