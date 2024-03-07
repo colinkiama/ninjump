@@ -34,6 +34,7 @@ export default class Demo extends Phaser.Scene {
   private _afterImageEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
   private _dustParticleEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
   private _wallSquashTween!: Phaser.Tweens.Tween;
+  private _background!: Phaser.GameObjects.Image;
 
   constructor() {
     super("GameScene");
@@ -44,9 +45,11 @@ export default class Demo extends Phaser.Scene {
     this.load.image("wall", "assets/wall.png");
     this.load.image("brick", "assets/brick.png");
     this.load.image("dust", "assets/dust.png");
+    this.load.image("background", "assets/background.png");
   }
 
   create() {
+    this.add.image(this.game.renderer.width / 2, 300, 'background');
     this._player = this.physics.add
       .sprite(
         PLAYER_SIZE / 2 + WALL_WIDTH - 1,
