@@ -35,9 +35,11 @@ export default class Demo extends Phaser.Scene {
   private _dustParticleEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
   private _wallSquashTween!: Phaser.Tweens.Tween;
   private _background!: Phaser.GameObjects.Image;
+  private _is_first_created: boolean;
 
   constructor() {
     super("GameScene");
+    this._is_first_created = false;
   }
 
   preload() {
@@ -49,7 +51,7 @@ export default class Demo extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(this.game.renderer.width / 2, 300, 'background');
+    this.add.image(this.game.renderer.width / 2, 300, "background");
     this._player = this.physics.add
       .sprite(
         PLAYER_SIZE / 2 + WALL_WIDTH - 1,
@@ -98,7 +100,6 @@ export default class Demo extends Phaser.Scene {
       "wall"
     );
 
-    this._leftWall.displayHeight = this._leftWall.displayHeight * 2;
     this._leftWall.body.immovable = true;
 
     this._rightWall = this.physics.add.staticImage(
@@ -109,7 +110,7 @@ export default class Demo extends Phaser.Scene {
 
     this._rightWall.body.immovable = true;
 
-    this._rightWall.displayHeight = this._rightWall.displayHeight * 2;
+    this.resizeWalls();
 
     let ceiling = <Phaser.Types.Physics.Arcade.GameObjectWithStaticBody>(
       this.add.zone(this.renderer.width / 2, 1 / 2, this.renderer.width, 1)
@@ -176,6 +177,11 @@ export default class Demo extends Phaser.Scene {
     }
 
     this._brickPool.start();
+
+    if (!this._is_first_created) {
+      this._is_first_created = true;
+      this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize.bind(this));
+    }
   }
 
   handlePitFall() {
@@ -333,7 +339,36 @@ export default class Demo extends Phaser.Scene {
       return;
     }
 
+    this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize.bind(this));
+
     this.scene.pause();
     this.scene.launch("GameOver");
+  }
+
+  onResize(
+    gameSize: Phaser.Structs.Size,
+    baseSize: Phaser.Structs.Size,
+    displaySize: Phaser.Structs.Size,
+    previousWidth: number,
+    previousHeight: number
+  ) {
+    this.resizeWalls();
+  }
+
+  resizeWalls() {
+    this._leftWall.setScale(
+      1,
+      this.game.scale.parentSize.height / this._leftWall.height
+    );
+
+    this._leftWall.refreshBody();    
+
+
+    this._rightWall.setScale(
+      1,
+      this.game.scale.parentSize.height / this._rightWall.height
+    );
+   
+    this._rightWall.refreshBody();
   }
 }
