@@ -29,15 +29,17 @@ export default class Demo extends Phaser.Scene {
   private _slipTimer!: SlipTimer;
   private _canSlip!: boolean;
   private _brickPool!: BrickPool;
-  private _pit!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
+  private _pit!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody | Phaser.GameObjects.Zone;
   private _playerFellDownPit!: boolean;
   private _afterImageEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
   private _dustParticleEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
   private _wallSquashTween!: Phaser.Tweens.Tween;
   private _background!: Phaser.GameObjects.Image;
+  private _is_first_created: boolean;
 
   constructor() {
     super("GameScene");
+    this._is_first_created = false;
   }
 
   preload() {
@@ -49,7 +51,7 @@ export default class Demo extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(this.game.renderer.width / 2, 300, 'background');
+    this.add.image(this.game.renderer.width / 2, 300, "background");
     this._player = this.physics.add
       .sprite(
         PLAYER_SIZE / 2 + WALL_WIDTH - 1,
@@ -98,7 +100,6 @@ export default class Demo extends Phaser.Scene {
       "wall"
     );
 
-    this._leftWall.displayHeight = this._leftWall.displayHeight * 2;
     this._leftWall.body.immovable = true;
 
     this._rightWall = this.physics.add.staticImage(
@@ -109,7 +110,7 @@ export default class Demo extends Phaser.Scene {
 
     this._rightWall.body.immovable = true;
 
-    this._rightWall.displayHeight = this._rightWall.displayHeight * 2;
+    this.resizeWalls();
 
     let ceiling = <Phaser.Types.Physics.Arcade.GameObjectWithStaticBody>(
       this.add.zone(this.renderer.width / 2, 1 / 2, this.renderer.width, 1)
@@ -126,7 +127,7 @@ export default class Demo extends Phaser.Scene {
         1
       )
     );
-
+      
     this.physics.add.existing(this._pit);
     this._pit.body.immovable = true;
 
@@ -176,6 +177,11 @@ export default class Demo extends Phaser.Scene {
     }
 
     this._brickPool.start();
+
+    if (!this._is_first_created) {
+      this._is_first_created = true;
+      this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize.bind(this));
+    }
   }
 
   handlePitFall() {
@@ -228,15 +234,15 @@ export default class Demo extends Phaser.Scene {
     wall: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ): void {
     if (
-      this._currentPlayerCollisionState == PlayerCollisionState.Hit ||
-      this._currentPlayerCollisionState == PlayerCollisionState.Slipped
+      this._currentPlayerCollisionState === PlayerCollisionState.Hit ||
+      this._currentPlayerCollisionState === PlayerCollisionState.Slipped
     ) {
       return;
     }
 
     if (
-      (this._currentPlayerCollisionState == PlayerCollisionState.OnLeftWall ||
-        this._currentPlayerCollisionState ==
+      (this._currentPlayerCollisionState === PlayerCollisionState.OnLeftWall ||
+        this._currentPlayerCollisionState ===
           PlayerCollisionState.OnRightWall) === false
     ) {
       this._slipTimer.start(() => this.setCanSlip(false));
@@ -333,7 +339,43 @@ export default class Demo extends Phaser.Scene {
       return;
     }
 
+    this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize.bind(this));
+
     this.scene.pause();
     this.scene.launch("GameOver");
+  }
+
+  onResize(
+    gameSize: Phaser.Structs.Size,
+    baseSize: Phaser.Structs.Size,
+    displaySize: Phaser.Structs.Size,
+    previousWidth: number,
+    previousHeight: number
+  ) {
+    this.resizeWalls();
+    this.repositionPit();
+  }
+
+  resizeWalls() {
+    this._leftWall.setScale(
+      1,
+      this.game.scale.parentSize.height / this._leftWall.height
+    );
+
+    this._leftWall.refreshBody();    
+
+
+    this._rightWall.setScale(
+      1,
+      this.game.scale.parentSize.height / this._rightWall.height
+    );
+   
+    this._rightWall.refreshBody();
+  }
+
+  repositionPit() {
+    const pitZone = this._pit as Phaser.GameObjects.Zone;
+    pitZone.setPosition(this.renderer.width / 2,
+    this.renderer.height + 100, this.renderer.height + 100);
   }
 }
