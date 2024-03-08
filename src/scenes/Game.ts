@@ -228,15 +228,15 @@ export default class Demo extends Phaser.Scene {
     wall: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ): void {
     if (
-      this._currentPlayerCollisionState == PlayerCollisionState.Hit ||
-      this._currentPlayerCollisionState == PlayerCollisionState.Slipped
+      this._currentPlayerCollisionState === PlayerCollisionState.Hit ||
+      this._currentPlayerCollisionState === PlayerCollisionState.Slipped
     ) {
       return;
     }
 
     if (
-      (this._currentPlayerCollisionState == PlayerCollisionState.OnLeftWall ||
-        this._currentPlayerCollisionState ==
+      (this._currentPlayerCollisionState === PlayerCollisionState.OnLeftWall ||
+        this._currentPlayerCollisionState ===
           PlayerCollisionState.OnRightWall) === false
     ) {
       this._slipTimer.start(() => this.setCanSlip(false));
