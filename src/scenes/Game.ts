@@ -29,7 +29,7 @@ export default class Demo extends Phaser.Scene {
   private _slipTimer!: SlipTimer;
   private _canSlip!: boolean;
   private _brickPool!: BrickPool;
-  private _pit!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody;
+  private _pit!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody | Phaser.GameObjects.Zone;
   private _playerFellDownPit!: boolean;
   private _afterImageEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
   private _dustParticleEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -127,7 +127,7 @@ export default class Demo extends Phaser.Scene {
         1
       )
     );
-
+      
     this.physics.add.existing(this._pit);
     this._pit.body.immovable = true;
 
@@ -353,6 +353,7 @@ export default class Demo extends Phaser.Scene {
     previousHeight: number
   ) {
     this.resizeWalls();
+    this.repositionPit();
   }
 
   resizeWalls() {
@@ -370,5 +371,11 @@ export default class Demo extends Phaser.Scene {
     );
    
     this._rightWall.refreshBody();
+  }
+
+  repositionPit() {
+    const pitZone = this._pit as Phaser.GameObjects.Zone;
+    pitZone.setPosition(this.renderer.width / 2,
+    this.renderer.height + 100, this.renderer.height + 100);
   }
 }
