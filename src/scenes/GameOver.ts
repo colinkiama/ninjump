@@ -4,6 +4,7 @@ import Button from "../objects/Button";
 export default class GameOver extends Phaser.Scene {
   constructor() {
     super("GameOver");
+    
   }
 
   create() {
@@ -11,7 +12,7 @@ export default class GameOver extends Phaser.Scene {
       .text(0, 0, "Game Over", {
         color: "#ffffff",
         fontSize: "2rem",
-        fontFamily: "sans-serif",
+        fontFamily: '"Arial", sans-serif',
         align: "center",
       })
       .setDepth(3);
@@ -29,20 +30,20 @@ export default class GameOver extends Phaser.Scene {
         color: "#ffffff",
         fontSize: "1rem",
         align: "center",
-        fontFamily: "sans-serif",
+        fontFamily: '"Arial", sans-serif',
       },
       {
-        backgroundColor: 0xff0000,
+        backgroundColor: 0x000000,
         padding: {
-          top: 4,
-          left: 7,
-          right: 7,
-          bottom: 4,
+          top: 8,
+          left: 40,
+          right: 40,
+          bottom: 8,
         },
       },
       () => {
-        let gameScene = this.scene.get("GameScene");
-        gameScene.scene.restart();
+        let mainGame = this.scene.get("MainGame");
+        mainGame.scene.restart();
         this.scene.stop();
       }
     );

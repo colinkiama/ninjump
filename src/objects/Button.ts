@@ -73,11 +73,14 @@ export default class Button extends Phaser.GameObjects.Container {
     );
 
     this.on("pointerover", () => {
-      this._buttonGraphics.fillColor = 0x0000ff;
+      this._buttonGraphics.fillColor = 0xffffff;
+      this._text.setColor("#000000")
     });
 
     this.on("pointerout", () => {
       this._buttonGraphics.fillColor = this._buttonStyle.backgroundColor;
+      this._text.setColor("#ffffff")
+
     });
 
     this.on("pointerup", () => {
