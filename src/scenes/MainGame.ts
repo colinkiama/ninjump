@@ -29,7 +29,9 @@ export default class MainGame extends Phaser.Scene {
   private _slipTimer!: SlipTimer;
   private _canSlip!: boolean;
   private _brickPool!: BrickPool;
-  private _pit!: Phaser.Types.Physics.Arcade.GameObjectWithStaticBody | Phaser.GameObjects.Zone;
+  private _pit!:
+    | Phaser.Types.Physics.Arcade.GameObjectWithStaticBody
+    | Phaser.GameObjects.Zone;
   private _playerFellDownPit!: boolean;
   private _afterImageEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
   private _dustParticleEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -51,7 +53,13 @@ export default class MainGame extends Phaser.Scene {
   }
 
   create() {
-    this._backgroundLayer = this.add.rectangle(this.game.renderer.width / 2, this.game.renderer.height / 2, this.game.renderer.width, this.game.renderer.height, 0x1a5476)
+    this._backgroundLayer = this.add.rectangle(
+      this.game.renderer.width / 2,
+      this.game.renderer.height / 2,
+      this.game.renderer.width,
+      this.game.renderer.height,
+      0x1a5476
+    );
     this.add.image(this.game.renderer.width / 2, 300, "background");
     this._player = this.physics.add
       .sprite(
@@ -128,7 +136,7 @@ export default class MainGame extends Phaser.Scene {
         1
       )
     );
-      
+
     this.physics.add.existing(this._pit);
     this._pit.body.immovable = true;
 
@@ -364,21 +372,23 @@ export default class MainGame extends Phaser.Scene {
       this.game.scale.parentSize.height / this._leftWall.height
     );
 
-    this._leftWall.refreshBody();    
-
+    this._leftWall.refreshBody();
 
     this._rightWall.setScale(
       1,
       this.game.scale.parentSize.height / this._rightWall.height
     );
-   
+
     this._rightWall.refreshBody();
   }
 
   repositionPit() {
     const pitZone = this._pit as Phaser.GameObjects.Zone;
-    pitZone.setPosition(this.renderer.width / 2,
-    this.renderer.height + 100, this.renderer.height + 100);
+    pitZone.setPosition(
+      this.renderer.width / 2,
+      this.renderer.height + 100,
+      this.renderer.height + 100
+    );
   }
 
   resizeBackgroundLayer() {
