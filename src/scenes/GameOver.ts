@@ -32,7 +32,7 @@ export default class GameOver extends Phaser.Scene {
         fontFamily: "sans-serif",
       },
       {
-        backgroundColor: 0xff0000,
+        backgroundColor: 0x000000,
         padding: {
           top: 4,
           left: 7,
@@ -41,8 +41,8 @@ export default class GameOver extends Phaser.Scene {
         },
       },
       () => {
-        let gameScene = this.scene.get("GameScene");
-        gameScene.scene.restart();
+        let mainGame = this.scene.get("MainGame");
+        mainGame.scene.restart();
         this.scene.stop();
       }
     );

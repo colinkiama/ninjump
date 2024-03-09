@@ -20,7 +20,7 @@ enum PlayerCollisionState {
   Hit,
 }
 
-export default class Demo extends Phaser.Scene {
+export default class MainGame extends Phaser.Scene {
   private _player!: Phaser.Physics.Arcade.Image;
   private _keySpace!: Phaser.Input.Keyboard.Key;
   private _leftWall!: Phaser.Types.Physics.Arcade.ImageWithStaticBody;
@@ -38,7 +38,7 @@ export default class Demo extends Phaser.Scene {
   private _is_first_created: boolean;
 
   constructor() {
-    super("GameScene");
+    super("MainGame");
     this._is_first_created = false;
   }
 
