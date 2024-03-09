@@ -34,7 +34,7 @@ export default class Demo extends Phaser.Scene {
   private _afterImageEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
   private _dustParticleEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
   private _wallSquashTween!: Phaser.Tweens.Tween;
-  private _background!: Phaser.GameObjects.Image;
+  private _backgroundLayer!: Phaser.GameObjects.Rectangle;
   private _is_first_created: boolean;
 
   constructor() {
@@ -51,6 +51,7 @@ export default class Demo extends Phaser.Scene {
   }
 
   create() {
+    this._backgroundLayer = this.add.rectangle(this.game.renderer.width / 2, this.game.renderer.height / 2, this.game.renderer.width, this.game.renderer.height, 0x1a5476)
     this.add.image(this.game.renderer.width / 2, 300, "background");
     this._player = this.physics.add
       .sprite(
@@ -354,6 +355,7 @@ export default class Demo extends Phaser.Scene {
   ) {
     this.resizeWalls();
     this.repositionPit();
+    this.resizeBackgroundLayer();
   }
 
   resizeWalls() {
@@ -377,5 +379,9 @@ export default class Demo extends Phaser.Scene {
     const pitZone = this._pit as Phaser.GameObjects.Zone;
     pitZone.setPosition(this.renderer.width / 2,
     this.renderer.height + 100, this.renderer.height + 100);
+  }
+
+  resizeBackgroundLayer() {
+    this._backgroundLayer.height = this.game.renderer.height;
   }
 }
