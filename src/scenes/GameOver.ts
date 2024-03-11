@@ -21,9 +21,6 @@ export default class GameOver extends Phaser.Scene {
       })
       .setDepth(3);
 
-    this._gameOverText.x = this.renderer.width / 2 - this._gameOverText.width / 2;
-    this._gameOverText.y = this.renderer.height / 2 - this._gameOverText.height / 2;
-    this._gameOverText.visible = true;
 
     this._playAgainButton = new Button(
       this,
@@ -52,10 +49,8 @@ export default class GameOver extends Phaser.Scene {
       }
     );
 
-    this._playAgainButton.setPosition(
-      this.renderer.width / 2 - this._playAgainButton.width / 2,
-      this.renderer.height / 2 - this._playAgainButton.height / 2 + 50
-    );
+  
+    this.repositionUI();
 
     let orginalCameraY = this.cameras.main.y;
     this.cameras.main.y = -this.renderer.height;
