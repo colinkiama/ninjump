@@ -50,6 +50,11 @@ export default class MainGame extends Phaser.Scene {
     this.load.image("brick", "assets/brick.png");
     this.load.image("dust", "assets/dust.png");
     this.load.image("background", "assets/background.png");
+
+    this.load.audio("game-over", ["assets/audio/game-over.ogg"]);
+    this.load.audio("wall-jump", ["assets/audio/wall-jump.ogg"]);
+    this.load.audio("wall-collision", ["assets/audio/wall-collision.ogg"]);
+    this.load.audio("hit", ["assets/audio/hit.ogg"]);
   }
 
   create() {
@@ -198,6 +203,9 @@ export default class MainGame extends Phaser.Scene {
       return;
     }
 
+    this._playerFellDownPit = true;
+    this.sound.play("game-over");
+
     this.events.emit("PlayerFellDownPit");
     this.cameras.main.shake(1000, 0.02, true);
     this._brickPool.freeze();
@@ -207,7 +215,6 @@ export default class MainGame extends Phaser.Scene {
         this.gameOver();
       },
     });
-    this._playerFellDownPit = true;
     // this._brickPool.stop();
   }
 
@@ -215,6 +222,7 @@ export default class MainGame extends Phaser.Scene {
     let brickCollidedWithPlayer = this.physics.collide(brick, this._player);
     if (!brick.hitPlayer && brickCollidedWithPlayer) {
       this._afterImageEmitter.stop();
+      this.sound.play('hit');
       this.cameras.main.shake(200, 0.02);
       this.events.emit("PlayerHit");
       this._player.setVelocityY(100);
@@ -269,6 +277,7 @@ export default class MainGame extends Phaser.Scene {
     this.updatePlayerFlip(this._currentPlayerCollisionState);
     this._afterImageEmitter.stop();
 
+    this.sound.play("wall-collision");
     this._wallSquashTween.play();
   }
 
@@ -311,6 +320,10 @@ export default class MainGame extends Phaser.Scene {
           this._afterImageEmitter.start();
           this._dustParticleEmitter.explode(5, this._player.x, this._player.y);
           break;
+      }
+
+      if (this._currentPlayerCollisionState !== PlayerCollisionState.Hit) {
+        this.sound.play("wall-jump");
       }
     }
   }
