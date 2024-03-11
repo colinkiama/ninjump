@@ -11,6 +11,10 @@ export default class GameOver extends Phaser.Scene {
     this._is_first_created = false;
   }
 
+  preload() {
+    this.load.audio("button-press", ["assets/audio/button-press.ogg"])
+  }
+
   create() {
     this._gameOverText = this.add
       .text(0, 0, "Game Over", {
@@ -43,6 +47,7 @@ export default class GameOver extends Phaser.Scene {
         },
       },
       () => {
+        this.sound.play('button-press')
         let mainGame = this.scene.get("MainGame");
         mainGame.scene.restart();
         this.scene.stop();

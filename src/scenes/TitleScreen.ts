@@ -7,11 +7,14 @@ export default class TitleScreen extends Phaser.Scene {
 
   constructor() {
     super("TitleScreen");
+
     this._is_first_created = false;
   }
 
   preload() {
     this.load.image("logo", "assets/logo.png");
+    this.load.audio("title-screen", ["assets/audio/title-screen.ogg"])
+    this.load.audio("button-press", ["assets/audio/button-press.ogg"])
   }
 
   create() {
@@ -41,6 +44,7 @@ export default class TitleScreen extends Phaser.Scene {
         },
       },
       () => {
+        this.sound.play('button-press');
         this.scene.start("MainGame");
         this.scene.stop();
       }
@@ -76,6 +80,12 @@ export default class TitleScreen extends Phaser.Scene {
     if (!this._is_first_created) {
       this._is_first_created = true;
       this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize.bind(this));
+    }
+
+    try {
+      this.sound.play("title-screen");
+    } catch (err) {
+      console.log(err);
     }
   }
 
