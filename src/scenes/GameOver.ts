@@ -2,13 +2,17 @@ import { Game, Tilemaps } from "phaser";
 import Button from "../objects/Button";
 
 export default class GameOver extends Phaser.Scene {
+  private _is_first_created: boolean;
+  private _gameOverText!: Phaser.GameObjects.Text;
+  private _playAgainButton!: Button;
+
   constructor() {
     super("GameOver");
-    
+    this._is_first_created = false;
   }
 
   create() {
-    let gameOverText = this.add
+    this._gameOverText = this.add
       .text(0, 0, "Game Over", {
         color: "#ffffff",
         fontSize: "2rem",
@@ -17,11 +21,8 @@ export default class GameOver extends Phaser.Scene {
       })
       .setDepth(3);
 
-    gameOverText.x = this.renderer.width / 2 - gameOverText.width / 2;
-    gameOverText.y = this.renderer.height / 2 - gameOverText.height / 2;
-    gameOverText.visible = true;
 
-    let playAgainButton = new Button(
+    this._playAgainButton = new Button(
       this,
       0,
       0,
@@ -48,10 +49,8 @@ export default class GameOver extends Phaser.Scene {
       }
     );
 
-    playAgainButton.setPosition(
-      this.renderer.width / 2 - playAgainButton.width / 2,
-      this.renderer.height / 2 - playAgainButton.height / 2 + 50
-    );
+  
+    this.repositionUI();
 
     let orginalCameraY = this.cameras.main.y;
     this.cameras.main.y = -this.renderer.height;
@@ -64,5 +63,30 @@ export default class GameOver extends Phaser.Scene {
       ease: "Elastic",
       easeParams: [1.25, 1.5],
     });
+
+    if (!this._is_first_created) {
+      this._is_first_created = true;
+      this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize.bind(this));
+    }
+  }
+
+  onResize(
+    gameSize: Phaser.Structs.Size,
+    baseSize: Phaser.Structs.Size,
+    displaySize: Phaser.Structs.Size,
+    previousWidth: number,
+    previousHeight: number
+  ) {
+    this.repositionUI();
+  }
+
+  repositionUI() {
+    this._gameOverText.x = this.renderer.width / 2 - this._gameOverText.width / 2;
+    this._gameOverText.y = this.renderer.height / 2 - this._gameOverText.height / 2;
+
+    this._playAgainButton.setPosition(
+      this.renderer.width / 2 - this._playAgainButton.width / 2,
+      this.renderer.height / 2 - this._playAgainButton.height / 2 + 50
+    );
   }
 }
