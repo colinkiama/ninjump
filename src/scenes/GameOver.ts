@@ -1,5 +1,7 @@
 import { Game, Tilemaps } from "phaser";
 import Button from "../objects/Button";
+import {NativeAudio} from '@capacitor-community/native-audio'
+
 
 export default class GameOver extends Phaser.Scene {
   private _is_first_created: boolean;
@@ -12,7 +14,12 @@ export default class GameOver extends Phaser.Scene {
   }
 
   preload() {
-    this.load.audio("button-press", ["assets/audio/button-press.ogg"])
+    NativeAudio.preload({
+      assetId: 'button-press',
+      assetPath: 'public/assets/sounds/button-press.ogg',
+      audioChannelNum: 2,
+      isUrl:false
+    })
   }
 
   create() {
@@ -47,7 +54,7 @@ export default class GameOver extends Phaser.Scene {
         },
       },
       () => {
-        this.sound.play('button-press')
+        NativeAudio.play({assetId: 'button-press'})
         let mainGame = this.scene.get("MainGame");
         mainGame.scene.restart();
         this.scene.stop();

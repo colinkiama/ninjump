@@ -1,4 +1,5 @@
 import Button from "../objects/Button";
+import { NativeAudio } from "@capacitor-community/native-audio";
 
 export default class TitleScreen extends Phaser.Scene {
   private _is_first_created: boolean;
@@ -13,8 +14,20 @@ export default class TitleScreen extends Phaser.Scene {
 
   preload() {
     this.load.image("logo", "assets/logo.png");
-    this.load.audio("title-screen", ["assets/audio/title-screen.ogg"])
-    this.load.audio("button-press", ["assets/audio/button-press.ogg"])
+
+    NativeAudio.preload({
+      assetId: "title-screen",
+      assetPath: "public/assets/sounds/title-screen.ogg",
+      audioChannelNum: 2,
+      isUrl: false,
+    }).then(() => NativeAudio.play({assetId: 'title-screen'}));
+
+    NativeAudio.preload({
+      assetId: "button-press",
+      assetPath: "public/assets/sounds/button-press.ogg",
+      audioChannelNum: 2,
+      isUrl: false,
+    });
   }
 
   create() {
@@ -44,7 +57,7 @@ export default class TitleScreen extends Phaser.Scene {
         },
       },
       () => {
-        this.sound.play('button-press');
+        NativeAudio.play({ assetId: "button-press" });
         this.scene.start("MainGame");
         this.scene.stop();
       }
@@ -80,12 +93,6 @@ export default class TitleScreen extends Phaser.Scene {
     if (!this._is_first_created) {
       this._is_first_created = true;
       this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize.bind(this));
-    }
-
-    try {
-      this.sound.play("title-screen");
-    } catch (err) {
-      console.log(err);
     }
   }
 

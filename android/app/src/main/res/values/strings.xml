@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Ninjump</string>
+    <string name="title_activity_main">Ninjump</string>
+    <string name="package_name">com.colinkiama.ninjump</string>
+    <string name="custom_url_scheme">com.colinkiama.ninjump</string>
+</resources>
